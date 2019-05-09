@@ -1,0 +1,27 @@
+---
+- hosts: frontend
+  vars:
+    http_port: 80
+    max_clients: 200
+  remote_user: vagrant
+  become: true
+  tasks: 
+  - name: Actualizar HTTP a la ultima version
+    package: 
+      name: httpd
+      state: present
+    notify: reiniciar servidor
+  - name: Iniciar servicio HTTP
+    service: 
+      name: httpd
+      state: started
+      enabled: yes
+    notify: reiniciar servidor
+  - name: Copie fichero de configuracion
+    copy:
+      src: /home/ansible/file1.txt
+      dest: /tmp/file4.txt
+    notify: reiniciar servidor
+  handlers:
+    - name: reiniciar servidor
+      command: 'shutdown -r -t sec 1'
